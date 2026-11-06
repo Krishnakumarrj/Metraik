@@ -1,0 +1,41 @@
+name: Windows build and tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and run Windows tests
+        shell: cmd
+        run: TEST.cmd > artifacts-test.log 2>&1
+      - name: Show results
+        if: always()
+        shell: pwsh
+        run: Get-Content artifacts-test.log
+      - name: Save test results and rendered UI
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Metraik-windows-test-results
+          path: |
+            artifacts-test.log
+            artifacts/screenshots/
+      - name: Package preview only after tests pass
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path package/Metraik -Force | Out-Null
+          Copy-Item Metraik.exe, RUN_ME.cmd, README.md -Destination package/Metraik
+          Copy-Item docs -Recurse -Destination package/Metraik
+          Compress-Archive -Path package/Metraik -DestinationPath Metraik-Windows-preview.zip
+          Get-FileHash Metraik-Windows-preview.zip -Algorithm SHA256 | Format-List | Out-File Metraik-Windows-preview.sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Metraik-Windows-preview
+          path: |
+            Metraik-Windows-preview.zip
+            Metraik-Windows-preview.sha256.txt
