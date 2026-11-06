@@ -158,7 +158,7 @@ namespace Metraik.Tests
                 popup.SetData(new AppSettings());
                 popup.Show(); Application.DoEvents();
                 Check(popup.Controls.OfType<Button>().Count() == 3, "keyboard-accessible popup actions");
-                foreach (Control control in popup.Controls) Check(popup.ClientRectangle.Contains(control.Bounds), "scaled button stays inside popup");
+                foreach (Control control in popup.Controls) Check(popup.ClientRectangle.Contains(control.Bounds), "scaled button stays inside popup: requested=" + scale + " client=" + popup.ClientRectangle + " control=" + control.Bounds);
                 using (Bitmap image = new Bitmap(popup.Width, popup.Height))
                 {
                     popup.DrawToBitmap(image, new Rectangle(Point.Empty, image.Size));

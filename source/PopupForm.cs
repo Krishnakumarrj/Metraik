@@ -13,7 +13,8 @@ namespace Metraik
 
         internal DateTime LastDeactivatedUtc { get; private set; }
         private AppSettings settings;
-        private readonly float scale;
+        private float scale;
+        private readonly float preferredScale;
         private readonly Button refreshButton;
         private readonly Button openButton;
         private readonly Button settingsButton;
@@ -23,9 +24,6 @@ namespace Metraik
         internal PopupForm(float requestedScale)
         {
             AutoScaleMode = AutoScaleMode.None;
-            using (Graphics graphics = CreateGraphics())
-                scale = requestedScale > 0 ? requestedScale : graphics.DpiX / 96f;
-            ClientSize = new Size((int)Math.Round(416 * scale), (int)Math.Round(413 * scale));
             Text = "Metraik usage";
             AccessibleName = "Metraik usage overview";
             BackColor = Ui.Background;
@@ -35,6 +33,10 @@ namespace Metraik
             TopMost = true;
             KeyPreview = true;
             DoubleBuffered = true;
+            using (Graphics graphics = CreateGraphics())
+                preferredScale = requestedScale > 0 ? requestedScale : graphics.DpiX / 96f;
+            scale = FitScale(preferredScale, Screen.FromPoint(Cursor.Position).WorkingArea);
+            ClientSize = new Size((int)Math.Round(416 * scale), (int)Math.Round(413 * scale));
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer |
                 ControlStyles.UserPaint | ControlStyles.ResizeRedraw, true);
             refreshButton = ActionButton("Refresh", "Refresh display only", new Rectangle(201, 365, 84, 34), 0);
@@ -45,6 +47,11 @@ namespace Metraik
             settingsButton.Click += delegate { Hide(); if (SettingsRequested != null) SettingsRequested(); };
             using (GraphicsPath rounded = Ui.RoundedRectangle(new RectangleF(0, 0, Width, Height), 18 * scale))
                 Region = new Region(rounded);
+        }
+
+        private static float FitScale(float preferred, Rectangle area)
+        {
+            return Math.Max(.1f, Math.Min(preferred, Math.Min((area.Width - 24) / 416f, (area.Height - 24) / 413f)));
         }
 
         private Button ActionButton(string text, string accessibleName, Rectangle logical, int order)
@@ -97,6 +104,25 @@ namespace Metraik
         {
             // On tray click the pointer is on the correct monitor, including multi-monitor setups.
             Rectangle area = Screen.FromPoint(Cursor.Position).WorkingArea;
+            float fitted = FitScale(preferredScale, area);
+            if (Math.Abs(fitted - scale) > .001f)
+            {
+                float ratio = fitted / scale;
+                foreach (Control control in Controls)
+                {
+                    control.SetBounds((int)Math.Round(control.Left * ratio), (int)Math.Round(control.Top * ratio),
+                        (int)Math.Round(control.Width * ratio), (int)Math.Round(control.Height * ratio));
+                    Font oldFont = control.Font;
+                    control.Font = Ui.CanvasFont(9 * fitted, FontStyle.Regular);
+                    oldFont.Dispose();
+                }
+                scale = fitted;
+                ClientSize = new Size((int)Math.Round(416 * scale), (int)Math.Round(413 * scale));
+                Region oldRegion = Region;
+                using (GraphicsPath rounded = Ui.RoundedRectangle(new RectangleF(0, 0, Width, Height), 18 * scale))
+                    Region = new Region(rounded);
+                if (oldRegion != null) oldRegion.Dispose();
+            }
             Location = PopupPosition(area, Size);
             Show();
             BringToFront();

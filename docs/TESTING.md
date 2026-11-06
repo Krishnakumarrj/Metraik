@@ -11,7 +11,7 @@ Coverage:
 - Manual XML persistence, atomic replacement, backups, corrupt files, old schema, prohibited DTDs, locked-target failure and temporary-file cleanup.
 - Alert threshold, independent weekly warning, duplicate suppression, re-arming on a new period, disabled/demo/expired suppression.
 - Tray icon rendering from 0 to 100%, unknown state and 500 icon creations with a bounded GDI count.
-- Popup rendering at logical 100%, 150% and 200%, native button bounds/actions and accessible usage descriptions.
+- Popup rendering at requested logical 100%, 150% and 200% (capped to fit the runner display), native button bounds/actions and accessible usage descriptions.
 - Settings source enablement, provider change isolation and saving.
 - Real NotifyIcon/menu construction, refresh and resource disposal with isolated readings.
 

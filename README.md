@@ -50,7 +50,7 @@ The app makes no network requests, gathers no telemetry and asks for no credenti
 
 ## Build and test
 
-Run `BUILD.cmd` to compile with warnings treated as errors. Run `TEST.cmd` for the Windows test suite. It covers countdown/expiry boundaries, independent weekly state, validation, legacy XML, atomic saves and failure recovery, alert suppression, provider changes, native popup actions, scaled rendering, icon handle ownership and creation/disposal of a real notification icon. Tests use temporary settings and do not register startup or launch service URLs.
+Run `BUILD.cmd` to compile with warnings treated as errors. Run `TEST.cmd` for the Windows test suite. It covers countdown/expiry boundaries, independent weekly state, validation, legacy XML, atomic saves and failure recovery, alert suppression, provider changes, native popup actions, scaled rendering with a cap to fit the current display, icon handle ownership and creation/disposal of a real notification icon. Tests use temporary settings and do not register startup or launch service URLs.
 
 GitHub Actions runs the build and tests on Windows Server 2022, saves rendered UI images and a test log, then packages a preview only after the suite succeeds. This verifies Windows compilation and automated behaviour; it does **not** establish Windows 11 physical-taskbar readability, Explorer restart recovery, startup after sign-in, assistive-technology support or mixed-DPI monitor behaviour. See [testing](docs/TESTING.md) for the remaining release checks. The app is system-DPI aware; moving between displays with different scaling may require a restart.
 
