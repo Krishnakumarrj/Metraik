@@ -1,0 +1,14 @@
+METRAIK - WINDOWS PREVIEW
+
+1. Extract all files into a permanent folder.
+2. Double-click RUN_ME.cmd (source packages build first).
+3. Find the numbered icon in the system tray, possibly under ^.
+4. Click for the active ring and weekly bar. Right-click for settings.
+5. Select a service and enter manual readings with future reset dates.
+
+Demo means example numbers. Manual values are snapshots, never live account data.
+Refresh updates the display only. An expired manual allowance becomes unknown.
+Changing service starts in Demo mode; only one service snapshot is saved.
+Startup and alerts are optional. Disable startup before deleting the app.
+
+For build requirements, test status and limitations, open README.md.
